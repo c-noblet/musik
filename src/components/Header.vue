@@ -1,9 +1,11 @@
 <template>
   <nav class="navbar navbar-dark bg-dark mb-3">
     <h1 class="navbar-brand">Musik</h1>
-    <div class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" v-model="filtre">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit" v-on:click="searchSongs(filtre)">Search</button>
+    <div class="input-group w-50">
+      <input class="form-control" type="search" placeholder="Search" aria-label="Search" v-model="filtre">
+      <div class="input-group-append">
+        <button class="btn btn-success" type="submit" v-on:click="searchSongs(filtre)">Search</button>
+      </div>
     </div>
     <form class="form-inline">
       <label for="login"></label>
