@@ -60,17 +60,22 @@ export default {
       fetch("http://localhost:8000/api_musique/musiques")
       .then((results) => results.json())
       .then(json => {
-        for(let i = 0; i < json.length; i++){
-          let song = [json[i].titre, json[i].album, json[i].artiste, json[i].annee, json[i].genre]
-          for(let j = 0; j < song.length; j++){
-            if(song[j].toString().toLowerCase().search(filtre.toLowerCase()) != -1){
-              list.push(json[i])
-              break;
+        if(filtre !== ''){
+          for(let i = 0; i < json.length; i++){
+            let song = [json[i].titre, json[i].album, json[i].artiste, json[i].annee, json[i].genre]
+            for(let j = 0; j < song.length; j++){
+              if(song[j].toString().toLowerCase().search(filtre.toLowerCase()) != -1){
+                list.push(json[i])
+                break;
+              }
             }
           }
+          console.log(list)
+          this.playlist = list
+        }else{
+          this.playlist = json
         }
-        console.log(list)
-        this.playlist = list
+        
       });
     }
   },
