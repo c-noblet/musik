@@ -7,10 +7,10 @@
         <button class="btn btn-success" type="submit" v-on:click="searchSongs(filtre)">Search</button>
       </div>
     </div>
-    <form class="form-inline">
+    <div class="form-inline">
       <label for="login"></label>
       <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#loginModal">Se connecter</button>
-    </form>
+    </div>
     <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -20,22 +20,22 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body">
-            <form>
+          <form id="logForm">
+            <div class="modal-body">
               <div class="form-group">
-                <label for="login" class="col-form-label">Nom d'utilisateur :</label>
-                <input type="text" class="form-control" id="login" />
+                <label for="username" class="col-form-label">Nom d'utilisateur :</label>
+                <input type="text" class="form-control" v-model="username" id="username"/>
               </div>
               <div class="form-group">
-              <label for="password" class="col-form-label">Mot de passe :</label>
-                <input type="password" class="form-control" id="password" />
+                <label for="password" class="col-form-label">Mot de passe :</label>
+                <input type="password" class="form-control" v-model="password" id="password" />
               </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-          <button type="button" class="btn btn-secondary">Créer un compte</button>
-            <button type="button" class="btn btn-primary">S'authentifier</button>
-          </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" v-on:click="handleUser('register', username, password)">Créer un compte</button>
+              <button type="button" class="btn btn-primary" v-on:click="handleUser('login', username, password )">S'authentifier</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -46,10 +46,13 @@
 export default {
   props: {
     searchSongs: Function,
+    handleUser: Function
   },
   data () {
     return {
-      filtre:''
+      filtre:'',
+      username: '',
+      password: '',
     }
   }
 }

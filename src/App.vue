@@ -1,24 +1,25 @@
 <template>
   <div id="app">
-    <Header 
+    <Header
       :searchSongs="searchSongs"
+      :handleUser="handleUser"
     />
-    <Dashboard 
+    <Dashboard v-if="dashboardLoaded"
       :songs="playlist"
       :skipTo="skipTo"
-
     />
     <footer class="fixed-bottom">
-      <aplayer
-        :music="{
-          title: titre,
-          artist: artist,
-          list: playlist,
-          src: 'http://localhost:8000/api_musique/musiques/get/musique/'+uid,
-          pic: 'http://localhost:8000/api_musique/musiques/get/image/'+uid
-        }"
+      <aplayer v-if="playerLoaded"
+        autoplay
+        controls
+        :music="currentPlaylist[arrayId]"
       />
     </footer>
+    <div v-if="!dashboardLoaded && !playerLoaded" class="text-center mt-5 pt-5">
+      <div class="spinner-border text-success" style="width: 10rem; height: 10rem;" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
     
   </div>
 </template>
@@ -32,37 +33,42 @@ export default {
   name: 'app',
   data () {
     return {
-      uid:'0',
+      arrayId:'0',
       playlist: [],
-      titre: '',
-      artist: ''
+      currentPlaylist: [],
+      dashboardLoaded: false,
+      playerLoaded: false,
+      user:{
+        username: null,
+        password: null,
+        isAdmin: null
+      },
+      errors: []
     }
   },
   mounted: function(){
     fetch("http://localhost:8000/api_musique/musiques")
     .then((results) => results.json())
     .then(json => {
-      this.uid = json[0].id,
-      this.playlist = json,
-      this.titre = json[0].titre
-      this.artist = json[0].artiste
+      this.playlist = json
+      this.currentPlaylist = json
+      this.dashboardLoaded = true
+      this.playerLoaded = true
     });
   },
   methods: {
     skipTo: function (e){
-      this.uid = e
-      this.titre = this.playlist[e-1].titre
-      this.artist = this.playlist[e-1].artiste
-
+      this.arrayId = e-1
     },
     searchSongs: function (filtre){
+      this.dashboardLoaded = false
       let list = []
       fetch("http://localhost:8000/api_musique/musiques")
       .then((results) => results.json())
       .then(json => {
         if(filtre !== ''){
           for(let i = 0; i < json.length; i++){
-            let song = [json[i].titre, json[i].album, json[i].artiste, json[i].annee, json[i].genre]
+            let song = [json[i].title, json[i].album, json[i].artist, json[i].annee, json[i].genre]
             for(let j = 0; j < song.length; j++){
               if(song[j].toString().toLowerCase().search(filtre.toLowerCase()) != -1){
                 list.push(json[i])
@@ -70,13 +76,40 @@ export default {
               }
             }
           }
-          console.log(list)
-          this.playlist = list
+          if(list.length >= 1){
+            this.playlist = list
+            this.dashboardLoaded = true
+          }else{
+            this.playlist = json
+            this.dashboardLoaded = true
+          }  
         }else{
           this.playlist = json
+          this.dashboardLoaded = true
         }
         
       });
+    },
+    handleUser: function (formCase, username, password){
+      if(formCase == 'register'){
+        fetch("https://jsonplaceholder.typicode.com/users/"+username+"/"+password)
+        .then((results) => results.json())
+        .then(json => {
+          if(json == password){
+            console.log('register')
+          }
+        })
+      }else if(formCase == 'login'){
+        fetch("https://jsonplaceholder.typicode.com/users/"+username+"/"+password)
+        .then((results) => results.json())
+        .then(json => {
+          if(json == password){
+            console.log('login')
+          }
+        })
+      }
+      this.user.username = username;
+      this.user.password = password;
     }
   },
   components: {
@@ -84,3 +117,10 @@ export default {
   }
 }
 </script>
+
+<style lang="css">
+  .aplayer, footer{
+    background-color: #343a40 !important;
+    color: white !important;
+  }
+</style>

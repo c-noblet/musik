@@ -4,11 +4,11 @@
       <li class="mx-2 mb-3 card" v-for="song in songs" :key="song.id" style="max-width: 300px" v-on:click="skipTo(song.id)">
         <div class="row no-gutters">
           <div class="col-4">
-            <img :src="'http://localhost:8000/api_musique/musiques/get/image/'+song.id" class="card-img" alt="">
+            <img :src="song.pic" class="card-img" alt="">
           </div>
           <div class="col-8">
             <div class="card-body p-3">
-              <h5 class="card-title">{{song.titre}}</h5>
+              <h5 class="card-title">{{song.title}}</h5>
               <p class="card-text">{{song.artiste}} <small class="text-muted">{{song.annee}}</small></p>
             </div>
           </div>
@@ -29,6 +29,9 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.container-fluid{
+  overflow-y: auto;
+}
 li{
   list-style: none;
 }
