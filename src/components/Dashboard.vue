@@ -51,8 +51,8 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-danger" v-on:click="deleteSong()">Supprimer</button>
-            <button type="button" class="btn btn-primary" v-on:click="editSong()">Sauvegarder</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal" v-on:click="deleteSong()">Supprimer</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal" v-on:click="editSong()">Sauvegarder</button>
           </div>
         </div>
       </div>
@@ -67,7 +67,8 @@ export default {
     songs: Array,
     skipTo: Function,
     search: Function,
-    editMode: Boolean
+    editMode: Boolean,
+    forceRender: Function
   },
   data () {
     return {
@@ -98,6 +99,7 @@ export default {
       .then((results) => results.json())
       .then(json => {
         console.log(json)
+        this.forceRender()
       })
     },
     deleteSong: function(){
@@ -106,6 +108,7 @@ export default {
       })
       .then((results) => results)
       .then(json => {
+        this.forceRender()
         console.log(json)
       })
     }

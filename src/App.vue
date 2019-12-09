@@ -5,11 +5,13 @@
       :handleUser="handleUser"
       :editMode="editMode"
       :handleEditMode="handleEditMode"
+      :forceRender="forceRender"
     />
     <Dashboard v-if="dashboardLoaded"
       :editMode="editMode"
       :songs="playlist"
       :skipTo="skipTo"
+      :forceRender="forceRender"
     />
     <footer class="fixed-bottom">
       <aplayer v-if="playerLoaded"
@@ -118,6 +120,16 @@ export default {
       }
       this.user.username = username;
       this.user.password = password;
+    },
+    forceRender : function () {
+      fetch("http://localhost:8000/api_musique/musiques")
+      .then((results) => results.json())
+      .then(json => {
+        this.playlist = json
+        this.currentPlaylist = json
+        this.dashboardLoaded = true
+        this.playerLoaded = true
+      });
     }
   },
   components: {

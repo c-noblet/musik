@@ -110,7 +110,8 @@ export default {
     searchSongs: Function,
     handleUser: Function,
     handleEditMode: Function,
-    editMode: Boolean
+    editMode: Boolean,
+    forceRender: Function
   },
   data () {
     return {
