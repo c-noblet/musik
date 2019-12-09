@@ -3,15 +3,18 @@
     <Header
       :searchSongs="searchSongs"
       :handleUser="handleUser"
+      :editMode="editMode"
+      :handleEditMode="handleEditMode"
     />
     <Dashboard v-if="dashboardLoaded"
+      :editMode="editMode"
       :songs="playlist"
       :skipTo="skipTo"
     />
     <footer class="fixed-bottom">
       <aplayer v-if="playerLoaded"
-        autoplay
         controls
+        :list="currentPlaylist"
         :music="currentPlaylist[arrayId]"
       />
     </footer>
@@ -20,7 +23,6 @@
         <span class="sr-only">Loading...</span>
       </div>
     </div>
-    
   </div>
 </template>
 
@@ -38,6 +40,7 @@ export default {
       currentPlaylist: [],
       dashboardLoaded: false,
       playerLoaded: false,
+      editMode: false,
       user:{
         username: null,
         password: null,
@@ -57,6 +60,9 @@ export default {
     });
   },
   methods: {
+    handleEditMode: function(){
+      this.editMode = !this.editMode
+    },
     skipTo: function (e){
       this.arrayId = e-1
     },
@@ -90,7 +96,7 @@ export default {
         
       });
     },
-    handleUser: function (formCase, username, password){
+    handleUser: function (formCase, username, password = ''){
       if(formCase == 'register'){
         fetch("https://jsonplaceholder.typicode.com/users/"+username+"/"+password)
         .then((results) => results.json())
@@ -107,6 +113,8 @@ export default {
             console.log('login')
           }
         })
+      }else if(formCase == 'disconnect'){
+        console.log('disconnect')
       }
       this.user.username = username;
       this.user.password = password;
@@ -122,5 +130,11 @@ export default {
   .aplayer, footer{
     background-color: #343a40 !important;
     color: white !important;
+  }
+  .aplayer-info{
+    border: 0 !important;
+  }
+  .aplayer-list{
+    display: none !important;
   }
 </style>
