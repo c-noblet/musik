@@ -54,15 +54,15 @@
                 </div>
                 <div class="form-group">
                   <label for="songPic">Image :</label>
-                  <input type="file" @change="previewPic" ref="myPic" class="form-control-file" id="songPic">
+                  <input type="file" ref="myPic" class="form-control-file" id="songPic">
                 </div>
                 <div class="form-group">
-                  <label for="songMp3">Fichier mp3 :</label>
-                  <input type="file" @change="previewMp3" ref="myMp3" class="form-control-file" id="songMp3">
+                  <label for="songFile">Fichier mp3 :</label>
+                  <input type="file" ref="myMp3" class="form-control-file" id="songFile">
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-primary" v-on:click="addSong()">Ajouter</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" v-on:click="addSong()">Ajouter</button>
               </div>
             </form>
           </div>
@@ -120,34 +120,35 @@ export default {
       filtre:'',
       username: '',
       password: '',
-      songTitle:'',
-      songArtist:'',
-      songAlbum:'',
-      songAnnee:'',
-      songGenre:'',
+      songTitle:'test',
+      songArtist:'test',
+      songAlbum:'test',
+      songAnnee:2020,
+      songGenre:'test',
       mp3:{},
       pic: {}
     }
   },
   methods: {
-    previewMp3: function () {
-      this.mp3 = this.$refs.myMp3.files
-    },
-    previewPic: function () {
-      this.pic = this.$refs.myPic.files
-    },
     addSong: function (){
+      
       const formData = new FormData();
-      formData.append('mp3', this.mp3)
-      formData.append('pic', this.pic)
-      fetch("http://localhost:8000/api_musique/musiques/ajouter/test/test/test/2020/test", {
+      let pic = document.querySelector('#songPic')
+      formData.append('pic', pic.files[0])
+      let songFile = document.querySelector('#songFile')
+      formData.append('song', songFile.files[0])
+      try {
+      fetch("http://localhost:8000/api_musique/musiques/ajouter/"+this.songTitle+"/"+this.songArtist+"/"+this.songAlbum+"/"+this.songAnnee+"/"+this.songGenre+"", {
         method: 'POST',
-        body: formData
+        body: formData,
       })
-      .then((results) => results)
-      .then(json => {
-        console.log(json)
-      })
+      .then((results) => {
+        console.log(results)
+        this.forceRender()
+        })
+      }catch (error){
+        console.error('clientError:', error)
+      }
     }
   }
 }
