@@ -2,10 +2,12 @@
   <div id="app">
     <Header
       :searchSongs="searchSongs"
-      :handleUser="handleUser"
       :editMode="editMode"
       :handleEditMode="handleEditMode"
       :forceRender="forceRender"
+      :user="user"
+      :readCookie="readCookie"
+      :writeCookie="writeCookie"
     />
     <Dashboard v-if="dashboardLoaded"
       :editMode="editMode"
@@ -44,84 +46,27 @@ export default {
       playerLoaded: false,
       editMode: false,
       user:{
-        username: null,
-        password: null,
-        isAdmin: null
+        id: '',
+        username: '',
+        prenom: '',
+        nom: '',
+        email: '',
+        password: '',
+        isLog: false,
+        isAdmin: false,
       },
       errors: []
     }
   },
   mounted: function(){
-    fetch("http://localhost:8000/api_musique/musiques")
-    .then((results) => results.json())
-    .then(json => {
-      this.playlist = json
-      this.currentPlaylist = json
-      this.dashboardLoaded = true
-      this.playerLoaded = true
-    });
-  },
-  methods: {
-    handleEditMode: function(){
-      this.editMode = !this.editMode
-    },
-    skipTo: function (e){
-      this.arrayId = e-1
-    },
-    searchSongs: function (filtre){
-      this.dashboardLoaded = false
-      let list = []
-      fetch("http://localhost:8000/api_musique/musiques")
-      .then((results) => results.json())
-      .then(json => {
-        if(filtre !== ''){
-          for(let i = 0; i < json.length; i++){
-            let song = [json[i].title, json[i].album, json[i].artist, json[i].annee, json[i].genre]
-            for(let j = 0; j < song.length; j++){
-              if(song[j].toString().toLowerCase().search(filtre.toLowerCase()) != -1){
-                list.push(json[i])
-                break;
-              }
-            }
-          }
-          if(list.length >= 1){
-            this.playlist = list
-            this.dashboardLoaded = true
-          }else{
-            this.playlist = json
-            this.dashboardLoaded = true
-          }  
-        }else{
-          this.playlist = json
-          this.dashboardLoaded = true
-        }
-        
-      });
-    },
-    handleUser: function (formCase, username, password = ''){
-      if(formCase == 'register'){
-        fetch("https://jsonplaceholder.typicode.com/users/"+username+"/"+password)
-        .then((results) => results.json())
-        .then(json => {
-          if(json == password){
-            console.log('register')
-          }
-        })
-      }else if(formCase == 'login'){
-        fetch("https://jsonplaceholder.typicode.com/users/"+username+"/"+password)
-        .then((results) => results.json())
-        .then(json => {
-          if(json == password){
-            console.log('login')
-          }
-        })
-      }else if(formCase == 'disconnect'){
-        console.log('disconnect')
-      }
-      this.user.username = username;
-      this.user.password = password;
-    },
-    forceRender : function () {
+    if(this.readCookie('user') != ''){
+      this.user.username = this.readCookie('user')
+      this.user.isLog = true
+    }
+    if(this.readCookie('isAdmin') == 'true'){
+      this.user.isAdmin = true
+    }
+    try{
       fetch("http://localhost:8000/api_musique/musiques")
       .then((results) => results.json())
       .then(json => {
@@ -129,7 +74,90 @@ export default {
         this.currentPlaylist = json
         this.dashboardLoaded = true
         this.playerLoaded = true
-      });
+      })
+    }catch(err){
+      alert('Une erreur est survenue lors du chargement')
+    }
+    
+  },
+  methods: {
+    handleEditMode: function(){
+      this.editMode = !this.editMode
+    },
+    skipTo: function(e){
+      this.arrayId = e-1
+    },
+    searchSongs: function (filtre){
+      this.dashboardLoaded = false
+      let list = []
+      try{
+        fetch("http://localhost:8000/api_musique/musiques")
+        .then((results) => results.json())
+        .then(json => {
+          if(filtre !== ''){
+            for(let i = 0; i < json.length; i++){
+              let song = [json[i].title, json[i].album, json[i].artist, json[i].annee, json[i].genre]
+              for(let j = 0; j < song.length; j++){
+                if(song[j].toString().toLowerCase().search(filtre.toLowerCase()) != -1){
+                  list.push(json[i])
+                  break;
+                }
+              }
+            }
+            if(list.length >= 1){
+              this.playlist = list
+              this.dashboardLoaded = true
+            }else{
+              this.playlist = json
+              this.dashboardLoaded = true
+            }  
+          }else{
+            this.playlist = json
+            this.dashboardLoaded = true
+          }
+        });
+      }catch(err){
+        alert('Une erreur est survenue')
+      }
+    },
+    writeCookie: function (name, value, days) {
+      let date, expires;
+      if (days) {
+          date = new Date();
+          date.setTime(date.getTime()+(days*24*60*60*1000));
+          expires = "; expires=" + date.toGMTString();
+              }else{
+          expires = "";
+      }
+      document.cookie = name + "=" + value + expires + "; path=/";
+    },
+    readCookie: function(name) {
+      let i, c, ca, nameEQ = name + "=";
+      ca = document.cookie.split(';');
+      for(i=0;i < ca.length;i++) {
+          c = ca[i];
+          while (c.charAt(0)==' ') {
+              c = c.substring(1,c.length);
+          }
+          if (c.indexOf(nameEQ) == 0) {
+              return c.substring(nameEQ.length,c.length);
+          }
+      }
+      return '';
+    },
+    forceRender : function () {
+      try{
+        fetch("http://localhost:8000/api_musique/musiques")
+        .then((results) => results.json())
+        .then(json => {
+          this.playlist = json
+          this.currentPlaylist = json
+          this.dashboardLoaded = true
+          this.playerLoaded = true
+        });
+      }catch(err){
+        alert('Une erreur est survenue lors du chargement')
+      }
     }
   },
   components: {

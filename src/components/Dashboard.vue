@@ -92,25 +92,30 @@ export default {
       this.songGenre = this.songs[id-1].genre
     },
     editSong: function(){
-      console.log('PUT')
-      fetch("http://localhost:8000/api_musique/musiques/modifer/"+this.songId+"/"+this.songTitle+"/"+this.songArtist+"/"+this.songAlbum+"/"+this.songAnnee+"/"+this.songGenre+"", {
-        method: 'PUT'
-      })
-      .then((results) => results.json())
-      .then(json => {
-        console.log(json)
-        this.forceRender()
-      })
+      try{
+        fetch("http://localhost:8000/api_musique/musiques/modifer/"+this.songId+"/"+this.songTitle+"/"+this.songArtist+"/"+this.songAlbum+"/"+this.songAnnee+"/"+this.songGenre+"", {
+          method: 'PUT'
+        })
+        .then((results) => results.json())
+        .then(
+          this.forceRender()
+        )
+      }catch(err){
+        alert('Une erreur est survenue')
+      }
     },
     deleteSong: function(){
-      fetch("http://localhost:8000/api_musique/musiques/delete/"+this.songId, {
-        method: 'DELETE'
-      })
-      .then((results) => results)
-      .then(json => {
-        this.forceRender()
-        console.log(json)
-      })
+      try{
+        fetch("http://localhost:8000/api_musique/musiques/delete/"+this.songId, {
+          method: 'DELETE'
+        })
+        .then((results) => results)
+        .then(
+          this.forceRender()
+        )
+      }catch(err){
+        alert('Une erreur est survenue')
+      }
     }
   }
 }
