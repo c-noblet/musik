@@ -250,74 +250,70 @@ export default {
       formData.append('pic', pic.files[0])
       let songFile = document.querySelector('#songFile')
       formData.append('song', songFile.files[0])
-      try {
-        fetch("http://localhost:8000/api_musique/musiques/ajouter/"+this.songTitle+"/"+this.songArtist+"/"+this.songAlbum+"/"+this.songAnnee+"/"+this.songGenre+"", {
-          method: 'POST',
-          body: formData,
-        })
-        .then(
-          this.forceRender()
-        )
-      }catch (error){
-        console.error('clientError:', error)
-      }
+      fetch("http://localhost:8000/api_musique/musiques/ajouter/"+this.songTitle+"/"+this.songArtist+"/"+this.songAlbum+"/"+this.songAnnee+"/"+this.songGenre+"", {
+        method: 'POST',
+        body: formData,
+      })
+      .then(
+        this.forceRender()
+      ).catch(function(){
+        alert('Une erreur est survenue')
+      })
     },
     loadUsersModal: function(){
-      try{
-        fetch("http://localhost:8000/user/users")
-        .then((results) => results.json())
-        .then(json => {
-          this.users = json
-          this.modalLoaded = true
-        })
-      }catch(err){
-        alert('une erreur est survenue')
-      }
+      fetch("http://localhost:8000/user/users")
+      .then((results) => results.json())
+      .then(json => {
+        this.users = json
+        this.modalLoaded = true
+      }).catch(function(){
+        alert('Une erreur est survenue')
+      })
       
     },
     registerUser: function(){
       if(this.user.email.indexOf('@') >= 0){
-        const formData = new FormData();
-        try{
-          fetch("http://localhost:8000/user/ajout/"+this.user.username+"/"+this.user.prenom+"/"+this.user.nom+"/"+this.user.password+"/"+this.user.email, {
-            method: 'POST',
-            body: formData,
-          })
-          .then((results) => results.json())
-          .then(json => {
-            alert('Le compte: '+json.username+' à été crée')
-          })
-        }catch(err){
-          alert('Une erreur est survenue')
+        if(this.user.email.indexOf('.') >= 0){
+          this.user.email = this.user.email.split('.').join('-');
+          console.log(this.user.email)
         }
+        const formData = new FormData();
+        fetch("http://localhost:8000/user/ajout/"+this.user.username+"/"+this.user.prenom+"/"+this.user.nom+"/"+this.user.password+"/"+this.user.email, {
+          method: 'POST',
+          body: formData,
+        })
+        .then((results) => results.json())
+        .then(json => {
+          alert('Le compte: '+json.username+' à été crée')
+        }).catch(function(){
+          alert('Une erreur est survenue')
+        })
       }else{
         alert('Email invalide')
       }
     },
     loginUser: function(){
-      try{
-        fetch("http://localhost:8000/user/connexion/"+this.user.username+"/"+this.user.password)
-        .then((results) => results.json())
-        .then(json => {
-          if(json.verif){
-            this.writeCookie('user', json.username, 3)
-            this.user.id = json.id
-            this.user.username = json.username
-            this.user.prenom = json.prenom
-            this.user.nom = json.nom
-            this.user.email = json.email
-            this.user.isLog = true
-            if(json.admin == 1){
-              this.user.isAdmin = true
-              this.writeCookie('isAdmin', true, 3)
-            }
-          }else{
-            alert('Identifiant incorrect')
+      fetch("http://localhost:8000/user/connexion/"+this.user.username+"/"+this.user.password)
+      .then((results) => results.json())
+      .then(json => {
+        if(json.verif){
+          this.writeCookie('user', json.username, 3)
+          this.user.id = json.id
+          this.user.username = json.username
+          this.user.prenom = json.prenom
+          this.user.nom = json.nom
+          this.user.email = json.email
+          this.user.isLog = true
+          if(json.admin == 1){
+            this.user.isAdmin = true
+            this.writeCookie('isAdmin', true, 3)
           }
-        })
-      }catch(err){
-        alert('Identifiant incorrect')
-      }
+        }else{
+          alert('Identifiant incorrect')
+        }
+      }).catch(function(){
+        alert('Une erreur est survenue')
+      })
     },
     disconnectUser: function(){
         this.writeCookie('user', '', 0)
@@ -333,17 +329,14 @@ export default {
         this.editMode = false
     },
     deleteUser: function(id,index){
-      try{
-        fetch("http://localhost:8000/user/suppression/"+id, {
-        method: 'DELETE'
-        })
-        .then(
-          this.users.splice(index, 1)
-        )
-      }catch(err){
-        alert('une erreur est survenue')
-      }
-      
+      fetch("http://localhost:8000/user/suppression/"+id, {
+      method: 'DELETE'
+      })
+      .then(
+        this.users.splice(index, 1)
+      ).catch(function(){
+        alert('Une erreur est survenue')
+      })
     },
     editModal: function(id, username, prenom, nom, email){
       this.userEdit.id = id
@@ -353,19 +346,16 @@ export default {
       this.userEdit.email = email
     },
     editUser : function(id){
-      try{
-        const formData = new FormData();
-        fetch("http://localhost:8000/user/update/"+id+'/'+this.userEdit.username+'/'+this.userEdit.nom+'/'+this.userEdit.prenom+'/'+this.userEdit.password+'/'+this.userEdit.email, {
-          method: 'PUT',
-          body: formData
-        })
-        .then(
-          alert('Changement réussi')
-        )
-      }catch(err){
+      const formData = new FormData();
+      fetch("http://localhost:8000/user/update/"+id+'/'+this.userEdit.username+'/'+this.userEdit.nom+'/'+this.userEdit.prenom+'/'+this.userEdit.password+'/'+this.userEdit.email, {
+        method: 'PUT',
+        body: formData
+      })
+      .then(
+        alert('Changement réussi')
+      ).catch(function(){
         alert('Une erreur est survenue')
-      }
-      
+      })  
     }
   }
 }
