@@ -8,6 +8,7 @@
       </div>
     </div>
     <div v-if="user.isLog == true">
+      <!-- Si un utilisateur est connecté-->
       <div class="dropdown">
         <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           {{user.username}}
@@ -21,6 +22,7 @@
           <button class="dropdown-item" v-on:click="disconnectUser()">Se déconnecter</button>
         </div>
       </div>
+      <!-- Modal d'affichage des utilisateurs -->
        <div class="modal fade" id="usersModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -51,6 +53,7 @@
           </div>
         </div>
       </div>
+      <!-- Modal d'ajout de musiques-->
       <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -100,6 +103,7 @@
       </div>
     </div>
     <div v-else>
+      <!-- Si aucun utilisateurs n'est connecté -->
       <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#loginModal">Se connecter</button>
       <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -129,6 +133,7 @@
           </div>
         </div>
       </div>
+      <!-- Modal pour créer un compte -->
       <div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="registerModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -169,6 +174,7 @@
         </div>
       </div>
     </div>
+    <!-- Modal pour éditer un utilisateur -->
     <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -244,6 +250,7 @@ export default {
     }
   },
   methods: {
+    // Ajout de musique
     addSong: function (){
       const formData = new FormData();
       let pic = document.querySelector('#songPic')
@@ -263,6 +270,7 @@ export default {
         alert('Une erreur est survenue')
       })
     },
+    // Chargement de la liste d'utilisateurs
     loadUsersModal: function(){
       fetch("http://localhost:8000/user/users")
       .then((results) => results.json())
@@ -274,6 +282,7 @@ export default {
       })
       
     },
+    // Enregistrement d'un nouvel utilisateur
     registerUser: function(){
       if(this.user.email.indexOf('@') >= 0){
         if(this.user.email.indexOf('.') >= 0){
@@ -295,6 +304,7 @@ export default {
         alert('Email invalide')
       }
     },
+    // Connecter un utilisateur
     loginUser: function(){
       fetch("http://localhost:8000/user/connexion/"+this.user.username+"/"+this.user.password)
       .then((results) => results.json())
@@ -318,6 +328,7 @@ export default {
         alert('Une erreur est survenue')
       })
     },
+    // Deconnecter un utilisateur
     disconnectUser: function(){
         this.writeCookie('user', '', 0)
         this.writeCookie('isAdmin', false, 0)
@@ -331,6 +342,7 @@ export default {
         this.user.isAdmin = false
         this.editMode = false
     },
+    // Supprimer un utilisateur
     deleteUser: function(id,index){
       fetch("http://localhost:8000/user/suppression/"+id, {
       method: 'DELETE'
@@ -341,6 +353,7 @@ export default {
         alert('Une erreur est survenue')
       })
     },
+    // Editer un utilisateur
     editModal: function(id, username, prenom, nom, email){
       this.userEdit.id = id
       this.userEdit.username = username
@@ -348,6 +361,7 @@ export default {
       this.userEdit.nom = nom
       this.userEdit.email = email
     },
+    // Sauvegarder les modifications d'utilisateurs
     editUser : function(id){
       const formData = new FormData();
       fetch("http://localhost:8000/user/update/"+id+'/'+this.userEdit.username+'/'+this.userEdit.nom+'/'+this.userEdit.prenom+'/'+this.userEdit.password+'/'+this.userEdit.email, {

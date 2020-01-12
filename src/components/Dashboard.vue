@@ -1,5 +1,6 @@
 <template>
   <div class="container-fluid">
+    <!-- Liste des musiques -->
     <ul class="list-group list-group-horizontal d-flex flex-wrap justify-content-around">
       <li class="mx-2 mb-3 card" v-for="(song, index) in songs" :key="song.id" style="max-width: 300px" v-on:click="skipTo(index)">
         <div class="row no-gutters">
@@ -19,6 +20,7 @@
         <button v-if="editMode" data-toggle="modal" data-target="#editModal" class="btn btn-edit btn-sm btn-outline-primary" v-on:click="openModal(song.id, index)">Edit</button>
       </li>
     </ul>
+    <!-- Modal d'édition de musiques-->
     <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -83,6 +85,7 @@ export default {
     }
   },
   methods:{
+    // Ouvrir un modal pour éditer une musiques
     openModal: function(id, index){
       this.songId = id
       this.songTitle = this.songs[index].title
@@ -91,6 +94,7 @@ export default {
       this.songAnnee = this.songs[index].annee
       this.songGenre = this.songs[index].genre
     },
+    // Sauvegarder les modifications d'une musiques
     editSong: function(){
       try{
         fetch("http://localhost:8000/api_musique/musiques/modifer/"+this.songId+"/"+this.songTitle+"/"+this.songArtist+"/"+this.songAlbum+"/"+this.songAnnee+"/"+this.songGenre+"", {
@@ -106,6 +110,7 @@ export default {
         alert('Une erreur est survenue')
       }
     },
+    // Supprimer une musiques
     deleteSong: function(){
       try{
         fetch("http://localhost:8000/api_musique/musiques/delete/"+this.songId, {

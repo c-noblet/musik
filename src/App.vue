@@ -58,14 +58,18 @@ export default {
       errors: []
     }
   },
+  // Lorsque l'application se charge
   mounted: function(){
+    // Si un cookie user est detecté on le login
     if(this.readCookie('user') != ''){
       this.user.username = this.readCookie('user')
       this.user.isLog = true
     }
+    // Si un cookie isAdmin est detecté on ajout les droits admin à l'utilisateur
     if(this.readCookie('isAdmin') == 'true'){
       this.user.isAdmin = true
     }
+    // On récupère les musiques
     fetch("http://localhost:8000/api_musique/musiques")
     .then((results) => results.json())
     .then(json => {
@@ -79,12 +83,15 @@ export default {
     
   },
   methods: {
+    // Se mettre en mode édition
     handleEditMode: function(){
       this.editMode = !this.editMode
     },
+    // Passer à une musique
     skipTo: function(e){
       this.arrayId = e
     },
+    // Filtre des musiques
     searchSongs: function (filtre){
       this.dashboardLoaded = false
       let list = []
@@ -116,6 +123,7 @@ export default {
         alert('Une erreur est survenue')
       })
     },
+    // Ecrire un Cookie
     writeCookie: function (name, value, days) {
       let date, expires;
       if (days) {
@@ -127,6 +135,7 @@ export default {
       }
       document.cookie = name + "=" + value + expires + "; path=/";
     },
+    // Lire un Cookie
     readCookie: function(name) {
       let i, c, ca, nameEQ = name + "=";
       ca = document.cookie.split(';');
@@ -141,6 +150,7 @@ export default {
       }
       return '';
     },
+    // Recharger la vue
     forceRender : function () {
       fetch("http://localhost:8000/api_musique/musiques")
       .then((results) => results.json())
