@@ -83,7 +83,7 @@ export default {
       this.editMode = !this.editMode
     },
     skipTo: function(e){
-      this.arrayId = e-1
+      this.arrayId = e
     },
     searchSongs: function (filtre){
       this.dashboardLoaded = false

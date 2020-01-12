@@ -254,9 +254,12 @@ export default {
         method: 'POST',
         body: formData,
       })
-      .then(
-        this.forceRender()
-      ).catch(function(){
+      .then((results) => results.json())
+      .then((json) => {
+        if(typeof json.id == 'number'){
+          this.forceRender()
+        }
+      }).catch(function(){
         alert('Une erreur est survenue')
       })
     },

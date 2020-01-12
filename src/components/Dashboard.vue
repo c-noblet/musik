@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
     <ul class="list-group list-group-horizontal d-flex flex-wrap justify-content-around">
-      <li class="mx-2 mb-3 card" v-for="song in songs" :key="song.id" style="max-width: 300px" v-on:click="skipTo(song.id)">
+      <li class="mx-2 mb-3 card" v-for="(song, index) in songs" :key="song.id" style="max-width: 300px" v-on:click="skipTo(index)">
         <div class="row no-gutters">
           <div class="col-4">
             <img :src="song.pic" class="card-img" alt="">
@@ -16,7 +16,7 @@
             </div>
           </div>
         </div>
-        <button v-if="editMode" data-toggle="modal" data-target="#editModal" class="btn btn-edit btn-sm btn-outline-primary" v-on:click="openModal(song.id)">Edit</button>
+        <button v-if="editMode" data-toggle="modal" data-target="#editModal" class="btn btn-edit btn-sm btn-outline-primary" v-on:click="openModal(song.id, index)">Edit</button>
       </li>
     </ul>
     <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -83,13 +83,13 @@ export default {
     }
   },
   methods:{
-    openModal: function(id){
+    openModal: function(id, index){
       this.songId = id
-      this.songTitle = this.songs[id-1].title
-      this.songArtist = this.songs[id-1].artist
-      this.songAlbum = this.songs[id-1].album
-      this.songAnnee = this.songs[id-1].annee
-      this.songGenre = this.songs[id-1].genre
+      this.songTitle = this.songs[index].title
+      this.songArtist = this.songs[index].artist
+      this.songAlbum = this.songs[index].album
+      this.songAnnee = this.songs[index].annee
+      this.songGenre = this.songs[index].genre
     },
     editSong: function(){
       try{
@@ -97,9 +97,11 @@ export default {
           method: 'PUT'
         })
         .then((results) => results.json())
-        .then(
-          this.forceRender()
-        )
+        .then((json) => {
+          if(typeof json.id == 'number'){
+            this.forceRender()
+          }
+        })
       }catch(err){
         alert('Une erreur est survenue')
       }
@@ -109,10 +111,12 @@ export default {
         fetch("http://localhost:8000/api_musique/musiques/delete/"+this.songId, {
           method: 'DELETE'
         })
-        .then((results) => results)
-        .then(
-          this.forceRender()
-        )
+        .then((results) => results.json())
+        .then((json) => {
+          if(typeof json.title == 'string'){
+            this.forceRender()
+          }
+        })
       }catch(err){
         alert('Une erreur est survenue')
       }
